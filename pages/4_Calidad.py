@@ -106,7 +106,7 @@ impuestos_sobre_beneficios=ex.income_tax(df_resultado)
 
 
 tax_rate=rt.calculo_tasa(beneficios_antes_impuestos,impuestos_sobre_beneficios)
-print ("tax rate",tax_rate)
+
 
 nopat=rt.calcular_nopat(beneficio_operativo, tax_rate)
 
