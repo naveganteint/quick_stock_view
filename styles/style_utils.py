@@ -86,8 +86,8 @@ def h2_especial(texto):
     """
     st.markdown(f"""
     <div style="
-        width: 70%;                /* ancho del div */
-        background-color: #8FBC8F;
+        width: 30%;                /* ancho del div */
+        background-color: lightblue;
         text-align: center;
         padding: 2px 0;            /* padding vertical mínimo */
         margin: 0 auto;             /* centra horizontalmente */
@@ -95,7 +95,7 @@ def h2_especial(texto):
     ">
         <span style="
             color: #1b3865;               
-            font-size: 24px;
+            font-size: 16px;
             font-weight: bold;
         ">{texto}</span>
     </div>
@@ -164,6 +164,22 @@ def tabla_222(cadena, numero):
             <tr>
                 <td style="border:1px solid gray; padding: 0px 0px 0px 15px;width:200px;color:gray;font-size: 14px;">{cadena} </td>
                 <td style="border:1px solid gray; padding: 0px 10px 0px 0px;width:100px;text-align: right;color: #1b3865;background:#B5CAF2; font-size: 18px;"><b>{numero:.2f}</b></td>
+            </tr>
+        </table>
+    </div>
+    """
+    st.markdown(html, unsafe_allow_html=True)
+
+
+
+
+def tabla_2_1(cadena, numero):
+    html = f"""
+    <div style="width:300px; margin: 0 auto;">
+        <table style="border-collapse: collapse;">
+            <tr>
+                <td style="border:1px solid #DCDCDC; padding: 0px 0px 0px 15px;width:200px;color:black;font-size: 15px;"><b>{cadena}</b> </td>
+                <td style="border:1px solid #DCDCDC; padding: 0px 10px 0px 0px;width:100px;text-align: right;color: #1b3865;background:lightblue;font-size: 14px;">{numero:.2f}</td>
             </tr>
         </table>
     </div>

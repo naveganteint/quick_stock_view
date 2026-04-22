@@ -320,6 +320,22 @@ def patrimonio(df):
 
 
 
+def retained(df):
+
+    fila=ut.buscar_fila(df, "Retained Earnings")
+    try:
+        lista=ut.fila_a_array (df,fila+1)
+    except :
+        lista= 10* [0]
+
+    lista=ut.limpiar_a_numeros(lista)
+
+    return lista
+
+
+
+
+
 
 
 
