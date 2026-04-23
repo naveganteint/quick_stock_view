@@ -28,8 +28,6 @@ if "hojas" in st.session_state and "flujo" in st.session_state.hojas:
 aplicar_estilos()
 
 
-
-
 st.markdown(
     '<h1 style="text-align: center; color: #1b3865; margin-top: -40px;">Valoraciones</h1>',
     unsafe_allow_html=True
@@ -39,42 +37,10 @@ años=df_resultado.columns.tolist()
 años=ut.procesar_array (años)
 
 
-#*************************************************************************************************************
-#***************************************************** Ratio deuda ebitda ************************************
-#*************************************************************************************************************
-
-
 
 
 #***************************************************** cotizacion *******************s**************************
 #***************************************************************************************************************
-
-
-h3_especial("Cotizacion accion")
-
-st.markdown("""
-<style>
-div[data-testid="stNumberInput"] {
-    max-width: 300px;
-    margin: auto;
-}
-</style>
-""", unsafe_allow_html=True)
-
-precio_accion = st.number_input("Introduce la Cotización:", value=50.0)
-
-
-
-
-
-#***************************************************** EV/ebitda*********************************************
-#***************************************************************************************************************
-
-
-h3_especial("EV/ebitda")
-st.write("")
-
-
 
 #***************************************************** acciones*********************************************
 
@@ -87,134 +53,19 @@ num_acciones_num=rt.convertir_a_numero(num_acciones)
 valor_num_acciones=num_acciones_num[-1]
 
 
-
-#***************************************************** market cap*********************************************
-
-marketcap= round(precio_accion * valor_num_acciones,2)
-
-
-
-#***************************************************** deuda neta*********************************************
-
-deuda_neta=ex.deuda_neta(df_balance)
-valor_deuda_neta= round(deuda_neta[-1],2)
-
-EV= round((marketcap+valor_deuda_neta),2)
-
-
-#***************************************************** ebitda*********************************************
-ebitda=ex.ebitda(df_resultado)
-valor_ebitda= round(ebitda[-1],2)
+#*******************************************************************************************************
 
 
 
 
-#***************************************************** ratio ev/ebitda*********************************************
-
-ratio_EV_ebitda= round ((marketcap+valor_deuda_neta) /valor_ebitda,2)
+h2_especial("Historial de crecimiento de datos económicos")
 
 
-#******************************************MOSTRAR DATOS****************
 
-tabla_2("Cotizacion",precio_accion)
-tabla_2( "Marketcap", marketcap)
-tabla_2( "Deuda neta", valor_deuda_neta)
-
-tabla_22 ("EV",round((EV),2))
-tabla_22 ("Ebitda",valor_ebitda)
-
-tabla_222 ("Mutiplo EV/ebitda",ratio_EV_ebitda)
-
-
-st.write("")
-st.write("")
-st.write("")
-
-#*************************************************************************************************************
-#***************************************************** Per************************************
-#*************************************************************************************************************
-h3_especial("PER")
-st.write("")
-
-marketcap=marketcap
 beneficio=ex.beneficio(df_resultado)
-valor_beneficio=beneficio[-1]
-
-per= (marketcap/valor_beneficio)
-
-
-tabla_2 ("marketcap",marketcap)
-tabla_2 ("Beneficio",valor_beneficio)
-
-tabla_222 ("PER",per)
-
-
-
-
-#*************************************************************************************************************
-#***************************************************** FCF yield ************************************
-#*************************************************************************************************************
-
-h3_especial("FCF yield")
-st.write("")
-st.write("")
-
-EV=EV
-fcf=ex.FCF(años,df_flujo,0)
-valor_fcf=fcf[-1]
-
-
-
-
-fcf_yield=round ((valor_fcf/EV)*100,2)
-
-tabla_2 ("fcf",valor_fcf)
-tabla_2 ("EV",EV)
-
-tabla_222 ("fcf_yield",fcf_yield)
-st.write("")
-tabla_222 ("Mutiplo EV/fcf",100/fcf_yield)
-
-st.write("")
-
-
-
-h3_especial("Book value")
-
-st.write("")
 patrimonio=ex.patrimonio(df_balance)
-valor_patrimonio=patrimonio[-1]
-marketcap=marketcap
-
-Price_to_book_value=round ((marketcap/valor_patrimonio),2)
-
-tabla_2 ("Marketcap",marketcap)
-tabla_2 ("Patrimonio",valor_patrimonio)
-tabla_222 ("Mutiplo Price-to-book-value",Price_to_book_value)
-
-st.write("")
-
-
-
-
-fco= ex.FCO(df_flujo)
-fcf=ex.FCF(años,df_flujo,0)
-beneficio= ex.beneficio(df_resultado)
-
-
-
-#*************************************************************************************************************
-#***************************************************** Valoracion *********************************************
-#*************************************************************************************************************
-
-h3_especial("Valoracion según escenarios")
-st.write("")
-h2_especial("Historial de crecimiento")
-
-st.write("")
-
 ventas=ex.ventas(df_resultado)
-beneficio=beneficio
+
 dividendo=ex.dividendos(df_flujo)
 bpa=ut.divide_listas(beneficio,num_acciones_num)
 patrimonio=patrimonio
@@ -290,22 +141,48 @@ st.markdown(html_table, unsafe_allow_html=True)
 
 
 
+
+
+
+
+h3_especial("Parametros Valoracion")
+
+
 st.markdown("""
 <style>
 div[data-testid="stNumberInput"] {
-    max-width: 200px;
+    max-width: 300px;
     margin: auto;
 }
 </style>
 """, unsafe_allow_html=True)
 
-#*******************************************************valoracion- crecimietno
-h2_especial("Crecimiento estimado")
 
-crecimiento = st.number_input("Introduce crecimiento estimado:", value=5.00)
-yield_dividendo = st.number_input("Rentabilidad dividendo inicial:", value=2.00)
-tabla_2_1("Precio accion",precio_accion)
+col1, col2, col3 = st.columns([1,2,1])
 
+with col2:
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.markdown("### Inputs base")
+        precio_accion = st.number_input("Precio", value=50.0)
+        crecimiento = st.number_input("Crecimiento (%)", value=5.00)
+        yield_dividendo = st.number_input("Dividendo (%)", value=2.00)
+
+    with col2:
+        st.markdown("### Escenarios")
+        multiplo_neg = st.number_input("Negativo", value=10)
+        multiplo = st.number_input("Normal", value=15)
+        multiplo_pos = st.number_input("Positivo", value=20)
+
+st.write("")
+
+#*******************************************************valoracion- crecimiento
+
+h3_especial("Tabla Revalorizacion a 10 años segun escenario")
+st.write("")
+h2_especial("Crecimiento estimado BPA % anual")
 crecimiento_menos = crecimiento - 1.5
 crecimiento_mas = crecimiento + 1.5
 
@@ -323,12 +200,7 @@ st.markdown(css, unsafe_allow_html=True)
 st.markdown(html_table, unsafe_allow_html=True)
 
 
-st.write("")
-h2_especial("Multiplos esperados")
-st.write("")
-multiplo_neg = st.number_input("multiplo escenario negativo:", value=10)
-multiplo = st.number_input("multiplo escenario normal:", value=15)
-multiplo_pos = st.number_input("multiplo escenario positivo:", value=20)
+
 
 h2_especial("Beneficio proyectado 10 años")
 
@@ -356,9 +228,7 @@ html_table = df_bpa.to_html(index=True, header=True, table_id="tabla_4listas", e
 st.markdown(css, unsafe_allow_html=True)
 st.markdown(html_table, unsafe_allow_html=True)
 
-st.write ("")
-h2_especial("Tabla Revalorizacion a 10 años segun escenario")
-st.write ("")
+
 precios = [round(a * b,2) for a in multiplos for b in bpas]
 
 
@@ -452,6 +322,169 @@ css = """
 st.markdown(css, unsafe_allow_html=True)
 st.markdown(html_table, unsafe_allow_html=True)
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#***************************************************** EV/ebitda*********************************************
+#***************************************************************************************************************
+
+
+h3_especial("EV/ebitda")
+st.write("")
+
+
+
+
+
+
+#***************************************************** market cap*********************************************
+
+marketcap= round(precio_accion * valor_num_acciones,2)
+
+
+
+#***************************************************** deuda neta*********************************************
+
+deuda_neta=ex.deuda_neta(df_balance)
+valor_deuda_neta= round(deuda_neta[-1],2)
+
+EV= round((marketcap+valor_deuda_neta),2)
+
+
+#***************************************************** ebitda*********************************************
+ebitda=ex.ebitda(df_resultado)
+valor_ebitda= round(ebitda[-1],2)
+
+
+
+
+#***************************************************** ratio ev/ebitda*********************************************
+
+ratio_EV_ebitda= round ((marketcap+valor_deuda_neta) /valor_ebitda,2)
+
+
+#******************************************MOSTRAR DATOS****************
+
+
+
+
+
+
+
+tabla_2("Cotizacion",precio_accion)
+tabla_2( "Marketcap", marketcap)
+tabla_2( "Deuda neta", valor_deuda_neta)
+
+tabla_22 ("EV",round((EV),2))
+tabla_22 ("Ebitda",valor_ebitda)
+
+tabla_222 ("Mutiplo EV/ebitda",ratio_EV_ebitda)
+
+
+st.write("")
+st.write("")
+st.write("")
+
+#*************************************************************************************************************
+#***************************************************** Per************************************
+#*************************************************************************************************************
+h3_especial("PER")
+st.write("")
+
+marketcap=marketcap
+
+valor_beneficio=beneficio[-1]
+
+per= (marketcap/valor_beneficio)
+
+
+tabla_2 ("marketcap",marketcap)
+tabla_2 ("Beneficio",valor_beneficio)
+
+tabla_222 ("PER",per)
+
+
+
+
+#*************************************************************************************************************
+#***************************************************** FCF yield ************************************
+#*************************************************************************************************************
+
+h3_especial("FCF yield")
+st.write("")
+st.write("")
+
+EV=EV
+fcf=ex.FCF(años,df_flujo,0)
+valor_fcf=fcf[-1]
+
+
+
+
+fcf_yield=round ((valor_fcf/EV)*100,2)
+
+tabla_2 ("fcf",valor_fcf)
+tabla_2 ("EV",EV)
+
+tabla_222 ("fcf_yield",fcf_yield)
+st.write("")
+tabla_222 ("Mutiplo EV/fcf",100/fcf_yield)
+
+st.write("")
+
+#**********************************************************Book value*******************
+
+h3_especial("Book value")
+
+st.write("")
+patrimonio=ex.patrimonio(df_balance)
+valor_patrimonio=patrimonio[-1]
+marketcap=marketcap
+
+Price_to_book_value=round ((marketcap/valor_patrimonio),2)
+
+tabla_2 ("Marketcap",marketcap)
+tabla_2 ("Patrimonio",valor_patrimonio)
+tabla_222 ("Mutiplo Price-to-book-value",Price_to_book_value)
+
+st.write("")
+
+
+
+
+fco= ex.FCO(df_flujo)
+fcf=ex.FCF(años,df_flujo,0)
+beneficio= ex.beneficio(df_resultado)
+
+
+
+#*************************************************************************************************************
+#***************************************************** Valoracion *********************************************
+#*************************************************************************************************************
+
+
+st.markdown("""
+<style>
+div[data-testid="stNumberInput"] {
+    max-width: 200px;
+    margin: auto;
+}
+</style>
+""", unsafe_allow_html=True)
 
 
 
