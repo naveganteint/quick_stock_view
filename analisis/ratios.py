@@ -169,6 +169,7 @@ def convertir_a_numero(lista):
 #******* Calcular margenes % *************************************************************
 
 
+
 def dividir_y_convertir_a_porcentaje(lista1, lista2):
     """
     Divide cada elemento de lista1 entre el correspondiente de lista2,

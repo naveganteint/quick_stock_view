@@ -8,7 +8,7 @@ import pandas as pd
 import analisis.fuente as ex
 from styles.style_utils import aplicar_estilos, h3_especial,tabla_2,tabla_22,tabla_222
 
-
+print(dir(rt))
 
 # Comprobar que la hoja "balance" está cargada
 if "hojas" in st.session_state and "balance" in st.session_state.hojas:
@@ -46,6 +46,7 @@ h3_especial("current Ratio")
 
 activo_cp=ex.activo_cp(df_balance)
 pasivos_cp=ex.pasivos_cp(df_balance)
+
 
 ratio_corrientes= rt.dividir_y_convertir_a_porcentaje(activo_cp,pasivos_cp)
 ratio_corrientes= [round(x/100,2) if isinstance(x, (int, float)) else x for x in ratio_corrientes]
