@@ -185,3 +185,7 @@ def tabla_2_1(cadena, numero):
     </div>
     """
     st.markdown(html, unsafe_allow_html=True)
+
+
+
+    

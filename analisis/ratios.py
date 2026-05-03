@@ -163,3 +163,32 @@ def convertir_a_numero(lista):
 
     return resultado
 
+
+
+
+#******* Calcular margenes % *************************************************************
+
+
+def dividir_y_convertir_a_porcentaje(lista1, lista2):
+    """
+    Divide cada elemento de lista1 entre el correspondiente de lista2,
+    multiplica el resultado por 100 y devuelve una nueva lista.
+    
+    Parámetros:
+    - lista1: primera lista de números
+    - lista2: segunda lista de números (debe tener la misma longitud que lista1)
+    
+    Retorna:
+    - lista de resultados en porcentaje
+    """
+    if len(lista1) != len(lista2):
+        raise ValueError("Las listas deben tener la misma longitud")
+
+    resultados = []
+    for a, b in zip(lista1, lista2):
+        if b == 0:
+            resultados.append(None)  # evitar división por cero
+        else:
+            resultados.append(round((a / b) * 100, 2))
+    return resultados
+

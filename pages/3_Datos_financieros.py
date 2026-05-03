@@ -88,59 +88,12 @@ ut.mostrar_tabla_tres_celdas("CAGR", "Beneficio", cagr)
 st.write("")
 
 
-#***********************************************Deuda neta- Ebitda *****************
-
-h3_especial("Deuda neta - Ebitda")
-
-
-
-deuda_neta= ex.deuda_neta(df_balance)
-
-
-ebitda=ex.ebitda(df_resultado)
-
-
-gr.graficar_2barras (deuda_neta, ebitda, 
-                     color1="#B43838", color2="#52923E",
-                     eje_x=años,
-                     etiquetas=("deuda neta","ebitda"),
-                     eje_y="Valores")
-
-
-
-ratio=ut.divide_listas(deuda_neta,ebitda)
-
-
-ut.mostrar_tabla_4_listas (años, deuda_neta, ebitda, ratio, "Deuda neta","Ebitda","Ratio Deuda neta/Ebitda")
-gr.graficar_una_linea (ratio, "#B43838", eje_x=años, etiqueta="Ratio Deuda neta/Ebitada", eje_y="Ratio")
-
-
-
-#***********************************************Deuda neta - cfo *****************
-
-h3_especial("Deuda neta- Flujo de caja operativo")
-
-
-fco=ex.FCO(df_flujo)
-ratio=ut.divide_listas(deuda_neta,fco)
-
-
-gr.graficar_2barras (deuda_neta, fco, 
-                     color1="#B43838", color2="#C296C4",
-                     eje_x=años,
-                     etiquetas=("deuda","fco"),
-                     eje_y="Valores")
-
-
-ut.mostrar_tabla_4_listas (años, deuda_neta, fco, ratio, "Deuda neta","fco","Ratio Deuda neta/fco")
-gr.graficar_una_linea (ratio, "#B43838", eje_x=años, etiqueta="Ratio Deuda/Ebitda", eje_y="Ratio")
-
 
 #***********************************************cfo - capex *****************
 
 h3_especial("Flujo de caja operativo - capex")
 
-fco=fco
+fco=ex.FCO(df_flujo)
 capex=ex.capex(df_flujo)
 capex_positivo = [-x for x in capex]
 
@@ -236,7 +189,7 @@ h3_especial("Variacion de caja")
 
 fcf_dividendos=ut.resta_listas (fcf,dividendos)
 
-
+deuda_neta=ex.deuda_neta(df_balance)
 deuda_neta_anterior=deuda_neta[:-1]
 deuda_neta_anterior.insert(0,0)
 variacion_deuda_neta= ut.resta_listas(deuda_neta,deuda_neta_anterior)

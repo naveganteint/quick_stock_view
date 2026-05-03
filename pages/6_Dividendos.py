@@ -29,7 +29,7 @@ aplicar_estilos()
 
 
 st.markdown(
-    '<h1 style="text-align: center; color: #1b3865; margin-top: -40px;">Datos Financieros</h1>',
+    '<h1 style="text-align: center; color: #1b3865; margin-top: -40px;">Dividendos</h1>',
     unsafe_allow_html=True
 )
 

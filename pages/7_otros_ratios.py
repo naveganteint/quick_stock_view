@@ -31,7 +31,7 @@ aplicar_estilos()
 
 
 st.markdown(
-    '<h1 style="text-align: center; color: #1b3865; margin-top: -40px;">Valoraciones</h1>',
+    '<h1 style="text-align: center; color: #1b3865; margin-top: -40px;">Otros ratios</h1>',
     unsafe_allow_html=True
 )
 
@@ -39,48 +39,26 @@ años=df_resultado.columns.tolist()
 años=ut.procesar_array (años)
 
 
-#*************************************************************************************************************
-#***************************************************** Intereses / Ebit ************************************
-#*************************************************************************************************************
+
+#***************************************************** Current ratio **********************************************
+
+h3_especial("current Ratio")
+
+activo_cp=ex.activo_cp(df_balance)
+pasivos_cp=ex.pasivos_cp(df_balance)
+
+ratio_corrientes= rt.dividir_y_convertir_a_porcentaje(activo_cp,pasivos_cp)
+ratio_corrientes= [round(x/100,2) if isinstance(x, (int, float)) else x for x in ratio_corrientes]
+
+lim_sup = 10*[1.5]
+lim_inf=10*[1]
 
 
-h3_especial("Ratio de cobertura( ebit/ intereses)")
-
-ebit=ex.beneficio_operativo(df_resultado)
-intereses=ex.intereses(df_resultado)
-intereses= [round(-x,2) if isinstance(x, (int, float)) else x for x in intereses]
+gr.graficar_tres_lineas(ratio_corrientes, lim_sup, lim_inf,"olive","lightgreen","coral", eje_x=años, etiquetas=("ratio corrientes","limite_sano","limite_no aceptable"), eje_y="solvencia corrientes")
 
 
+ut.mostrar_dos_arrays_texto(años, ratio_corrientes ,"ratio corrientes")
 
-
-gr.graficar_2barras (ebit, intereses, 
-                     color1="#43CF5A", color2="#EE6259",
-                     eje_x=años,
-                     etiquetas=("ebit","intereses"),
-                     eje_y="Valores")
-
-
-ratio_intereses_ebit=ut.divide_listas(intereses, ebit)
-#ratio_intereses_ebit= [ round(100*x,2) if isinstance(x, (int, float)) else x for x in ratio_intereses_ebit]
-
-
-
-
-
-ut.mostrar_tres_arrays (años,ebit,intereses,"ebit","intereses")
-años=años[1:]
-
-
-
-
-
-ratio_intereses_ebit = [
-    f"{x*100:.2f} %" if isinstance(x, (int, float)) and x is not None else "-"
-    for x in ratio_intereses_ebit
-]
-
-
-ut.mostrar_dos_arrays_texto (años,ratio_intereses_ebit,"% intereses/ebit")
 
 
 
@@ -187,6 +165,16 @@ gr.graficar_n_barras(listas,
                      eje_x=años,
                      etiquetas=etiquetas,
                      eje_y="Valores")
+
+
+deuda_neta=ex.deuda_neta(df_balance)
+
+gr.grafica_columnas(años,deuda_neta,"Años","Deuda neta","#CE5B5B")
+cagr=rt.calcular_cagr(deuda_neta)
+ut.mostrar_tabla_tres_celdas("CAGR", "Deuda neta", cagr)
+
+
+
 
 st.write("")
 
