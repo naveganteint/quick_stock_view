@@ -153,6 +153,81 @@ gr.graficar_tres_lineas(porcen_godwill, porcen_intangibles, porcen_total_intagib
 
 
 
+#******************************************************Asignacion de capital **********************************************
+
+h3_especial("Asignacion de capital")
+
+fco=ex.FCO(df_flujo)
+dividendos=ex.dividendos(df_flujo)
+capex=ex.capex(df_resultado)
+
+
+fcf1=ut.resta_listas(fco,capex)
+fco_div_capex=ut.resta_listas(fcf1,dividendos)
+
+
+recompras=ex.recompras(df_flujo)
+adquisiciones=ex.adquisiciones(df_flujo)
+deuda_emitida=ex.pago_deuda(df_flujo)
+
+
+aux1=ut.suma_listas(recompras,adquisiciones)
+aux1=ut.suma_listas(aux1,deuda_emitida)
+aux1=[-x for x in aux1]
+
+
+listas=[fco_div_capex,aux1, adquisiciones,recompras,deuda_emitida]   
+etiquetas= ["FCO_div_capex","RE+adq+Deuda","Aquisiciones","Recompras","Deuda emitida"]
+colores=["#52815D","#8DF16E","#351D03","#C46807","#EC4D42"]
+
+
+
+gr.graficar_n_barras(listas, 
+                     colores=colores,
+                     eje_x=años,
+                     etiquetas=etiquetas,
+                     eje_y="Valores")
+
+st.write("")
+
+
+
+#************************************************************NET CASH **********************************
+h3_especial("Net cash")
+
+fco=fco
+cash_from_inversion=ex.cash_inversion(df_flujo)
+cash_from_finacing=ex.cash_financing(df_flujo)
+
+resultado=ut.suma_listas(fco,cash_from_inversion)
+net_cash=ut.suma_listas(resultado,cash_from_finacing)
+
+cash_from_inversion2 = [round (float(-x),2) for x in cash_from_inversion]
+cash_from_finacing2 = [round (float(-x),2) for x in cash_from_finacing]
+
+gr.graficar_barras_apiladas_y_linea(fco, cash_from_inversion2, cash_from_finacing2, net_cash,
+                                    "#F3B890","#318DB8", "#89A064", 'blue',
+                                    eje_x=años,
+                                    etiquetas=("fco","cash from inversion","cash from financing","net cash"),
+                                    eje_y_izq="Millones",
+                                    eje_y_der="Millones")
+
+caja=ex.caja(df_balance)
+
+ut.crear_tabla_5_listas (años, fco,  cash_from_inversion, cash_from_finacing,net_cash,"FCO","cash from inversion","cash from financing","Net Cash")
+
+gr.grafica_columnas(años,caja,"Años","Caja","#83F068")
+cagr=rt.calcular_cagr(caja)
+ut.mostrar_tabla_tres_celdas("CAGR", "Caja", cagr)
+
+
+activos=ex.activos(df_balance)
+por_activos=ut.divide_listas(caja,activos)
+por_activos=[round (x*100,0) for x in por_activos]
+por_activos=[f"{x:.0f} %" for x in por_activos]
+
+
+ut.mostrar_tres_arrays_texto(años,  caja ,por_activos,"Caja","Porcentaje de los activos")
 
 
 

@@ -700,3 +700,97 @@ def variacion_porcentual(lista):
 
     return resultado
 
+
+
+#################################crear tabla 5 listas *********************************
+
+
+def crear_tabla_5_listas(lista1, lista2, lista3, lista4,lista5, texto1, texto2, texto3,texto4):
+        """
+        Crea una tabla de 4 filas:
+        
+        - Fila 1: "años" + lista1
+        - Fila 2: texto1 + lista2
+        - Fila 3: texto2 + lista3
+        - Fila 4: texto3 + lista4
+        """
+
+        # Validar longitudes
+        n = len(lista1)
+        if not (len(lista2) == len(lista3) == len(lista4) == len (lista5) ):
+            raise ValueError("Todas las listas deben tener la misma longitud")
+
+
+
+        # Crear DataFrame
+        df = pd.DataFrame(
+            [lista2, lista3, lista4,lista5],
+            columns=lista1  # 👈 los años como columnas
+        )
+
+        # Añadir primera columna con etiquetas
+        df.insert(0, "años", [texto1, texto2, texto3,texto4])
+
+      
+
+        # Convertir DataFrame a HTML
+        html_table = df.to_html(index=False, header=True,table_id="tabla_5lista",escape=False,)
+        
+        css ="""
+        <style>
+        table.dataframe#tabla_5lista {
+        
+            width: auto;            /* ancho automático según contenido */
+            border-collapse: collapse;
+            margin-left: auto;
+            margin-right: auto;     /* centra la tabla */
+        }
+    
+        table.dataframe#tabla_5lista tbody tr{
+           
+            text-align: center;
+  
+        }
+
+      
+        table#tabla_5lista thead th {
+            background-color: #D9E6E7;   
+            text-align: center;
+    
+        }
+        
+
+
+
+        /* Opcional: bordes de celdas */
+        table.dataframe td {
+            border: 1px solid #ccc;
+        }
+
+        table.dataframe#tabla_5lista tbody tr:nth-child(4) td {
+        background-color: #E7D6FC !important;
+        }
+
+        table.dataframe#tabla_5lista tbody td:first-child {
+            font-weight: bold;
+        }
+        
+        table#tabla_5lista td {
+        line-height: 1.2; /* más compacto */
+
+        </style>
+
+
+
+
+        """
+        
+
+    
+        
+        # Mostrar CSS y tabla
+        st.markdown(css, unsafe_allow_html=True)
+        st.markdown(html_table, unsafe_allow_html=True)    
+
+
+

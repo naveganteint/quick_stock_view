@@ -88,61 +88,52 @@ ut.mostrar_tabla_tres_celdas("CAGR", "Beneficio", cagr)
 st.write("")
 
 
-#***********************************************Deuda - Ebitda *****************
+#***********************************************Deuda neta- Ebitda *****************
 
-h3_especial("Deuda - Ebitda")
-
-
+h3_especial("Deuda neta - Ebitda")
 
 
 
-
-deuda_cp=ex.deuda_cp(df_balance)
-deuda_lp=ex.deuda_lp(df_balance)
-
-deuda=ut.suma_listas(deuda_cp,deuda_lp)
-
-
-
+deuda_neta= ex.deuda_neta(df_balance)
 
 
 ebitda=ex.ebitda(df_resultado)
 
 
-gr.graficar_2barras (deuda, ebitda, 
+gr.graficar_2barras (deuda_neta, ebitda, 
                      color1="#B43838", color2="#52923E",
                      eje_x=años,
-                     etiquetas=("deuda","ebitda"),
+                     etiquetas=("deuda neta","ebitda"),
                      eje_y="Valores")
 
 
 
-ratio=ut.divide_listas(deuda,ebitda)
+ratio=ut.divide_listas(deuda_neta,ebitda)
 
 
-ut.mostrar_tabla_4_listas (años, deuda, ebitda, ratio, "Deuda","Ebitda","Ratio Deuda/Ebitda")
-gr.graficar_una_linea (ratio, "#B43838", eje_x=años, etiqueta="Ratio Deuda/Ebitada", eje_y="Ratio")
+ut.mostrar_tabla_4_listas (años, deuda_neta, ebitda, ratio, "Deuda neta","Ebitda","Ratio Deuda neta/Ebitda")
+gr.graficar_una_linea (ratio, "#B43838", eje_x=años, etiqueta="Ratio Deuda neta/Ebitada", eje_y="Ratio")
 
 
 
-#***********************************************Deuda - cfo *****************
+#***********************************************Deuda neta - cfo *****************
 
-h3_especial("Deuda - Flujo de caja operativo")
+h3_especial("Deuda neta- Flujo de caja operativo")
 
-deuda=deuda
+
 fco=ex.FCO(df_flujo)
-ratio=ut.divide_listas(deuda,fco)
+ratio=ut.divide_listas(deuda_neta,fco)
 
 
-gr.graficar_2barras (deuda, fco, 
+gr.graficar_2barras (deuda_neta, fco, 
                      color1="#B43838", color2="#C296C4",
                      eje_x=años,
                      etiquetas=("deuda","fco"),
                      eje_y="Valores")
 
 
-ut.mostrar_tabla_4_listas (años, deuda, fco, ratio, "Deuda","fco","Ratio Deuda/fco")
-gr.graficar_una_linea (ratio, "#B43838", eje_x=años, etiqueta="Ratio Deuda/Ebitada", eje_y="Ratio")
+ut.mostrar_tabla_4_listas (años, deuda_neta, fco, ratio, "Deuda neta","fco","Ratio Deuda neta/fco")
+gr.graficar_una_linea (ratio, "#B43838", eje_x=años, etiqueta="Ratio Deuda/Ebitda", eje_y="Ratio")
 
 
 #***********************************************cfo - capex *****************
@@ -237,3 +228,86 @@ ut.mostrar_dos_arrays_texto (años,acciones,"Numº de acciones")
 cagr=rt.calcular_cagr(acciones)
 ut.mostrar_tabla_tres_celdas("CAGR", "Acciones", cagr)
 
+
+
+#*********************************************** Varacion caja *****************
+
+h3_especial("Variacion de caja")
+
+fcf_dividendos=ut.resta_listas (fcf,dividendos)
+
+
+deuda_neta_anterior=deuda_neta[:-1]
+deuda_neta_anterior.insert(0,0)
+variacion_deuda_neta= ut.resta_listas(deuda_neta,deuda_neta_anterior)
+variacion_deuda_neta[0] = "-"
+
+
+
+
+
+
+caja=ex.caja(df_balance)
+recompras=ex.recompras(df_flujo)
+adquisiciones=ex.adquisiciones(df_flujo)
+
+
+suma_com_ad=ut.suma_listas(recompras,adquisiciones)
+
+
+
+
+
+suma_fcf_div_suma=ut.suma_listas(suma_com_ad,fcf_dividendos)
+
+
+
+caja_anterior=caja[:-1]
+caja_anterior.insert(0,0)
+variacion_caja= ut.resta_listas(caja,caja_anterior)
+variacion_caja[0] = "-"
+
+
+
+
+
+
+suma_asignacion=ut.suma_listas (variacion_deuda_neta,suma_fcf_div_suma)
+
+comparacion=ut.resta_listas(suma_asignacion,variacion_caja)
+
+#ut.mostrar_tres_arrays_texto(años, fcf_dividendos, variacion_deuda_neta ,"FCF menos dividendos","Variacion deuda neta")
+#ut.mostrar_tabla_4_listas(años,recompras,adquisiciones,suma_com_ad,"Recompras","Adquisiciones","Suma")
+#ut.mostrar_dos_arrays_texto (años,caja,"Caja")
+#ut.mostrar_tres_arrays_texto(años, variacion_caja, suma_fcf_div_suma ,"variacion caja","FCF menos div, recompras y adquisiciones")
+#ut.mostrar_dos_arrays_texto (años,suma_asignacion,"suma asignacion flujo con variacion deuda")
+#ut.mostrar_dos_arrays_texto (años,comparacion,"comparacion variacion caja con asignacion de capitals")
+
+
+
+pago_deuda=ex.pago_deuda(df_flujo)
+
+st.markdown(
+    "<h5 style='text-align: center;'>Δ deuda neta > deuda emitida → están consumiendo caja</h5>",
+    unsafe_allow_html=True
+)
+
+dif_var_deuda=ut.resta_listas(pago_deuda,variacion_deuda_neta)
+ut.mostrar_tabla_4_listas(años,pago_deuda,variacion_deuda_neta,dif_var_deuda,"Emision deuda","Variacion Deuda neta","Diferencia")
+#ut.mostrar_tres_arrays_texto(años,  variacion_deuda_neta ,pago_deuda,"variacion deuda neta","Deuda emitida")
+
+ut.mostrar_dos_arrays_texto (años,variacion_caja,"variacion Caja")
+
+
+gr.grafica_columnas(años,caja,"Años","Caja","#83F068")
+cagr=rt.calcular_cagr(caja)
+ut.mostrar_tabla_tres_celdas("CAGR", "Caja", cagr)
+
+
+activos=ex.activos(df_balance)
+por_activos=ut.divide_listas(caja,activos)
+por_activos=[round (x*100,0) for x in por_activos]
+por_activos=[f"{x:.0f} %" for x in por_activos]
+
+
+ut.mostrar_tres_arrays_texto(años,  caja ,por_activos,"Caja","Porcentaje de los activos")
