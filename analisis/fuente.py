@@ -245,6 +245,30 @@ def caja(df):
 
 
 
+def clientes(df):
+
+    fila=ut.buscar_fila(df, "Accounts Receivable")
+    try:
+        lista=ut.fila_a_array (df,fila+1)
+    except :
+        lista= 10* [0]
+
+    lista=ut.limpiar_a_numeros(lista)
+
+    return lista
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 def goodwill(df):
 
@@ -447,7 +471,17 @@ def deuda_lp(df):
 
 
 
+def proveedores(df):
 
+    fila=ut.buscar_fila(df, "Accounts Payable")
+    try:
+        lista=ut.fila_a_array (df,fila+1)
+    except :
+        lista= 10* [0]
+
+    lista=ut.limpiar_a_numeros(lista)
+
+    return lista
 
 
 

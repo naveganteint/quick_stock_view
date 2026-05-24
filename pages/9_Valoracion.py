@@ -8,6 +8,12 @@ import pandas as pd
 import analisis.fuente as ex
 from styles.style_utils import aplicar_estilos, h3_especial,tabla_2,tabla_22,tabla_222,h2_especial,tabla_2_1
 
+import modules.Valoracion_Gorka as vg
+
+# 🔴 IMPORTANTE: inicializar siempre
+if "view" not in st.session_state:
+    st.session_state.view = "main"
+
 
 
 # Comprobar que la hoja "balance" está cargada
@@ -37,6 +43,7 @@ años=df_resultado.columns.tolist()
 años=ut.procesar_array (años)
 
 
+#*************************************** menu valoracion *********************
 
 
 #***************************************************** cotizacion *******************s**************************

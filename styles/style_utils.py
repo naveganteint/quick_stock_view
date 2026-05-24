@@ -188,4 +188,141 @@ def tabla_2_1(cadena, numero):
 
 
 
+#**********************************************************Tabla 2 ********************************************************
+
+
+def titulo_con_ventana_informativa(texto, explicacion=None,color="#C2DAC1"):
+
+    # limpiar texto para evitar saltos raros
+    if explicacion:
+        explicacion = " ".join(explicacion.split())
+
+    html = f"""
+    <style>
+    .title-box {{
+        width: 70%;
+        background-color: {color};
+        text-align: center;
+        padding: 5px;
+        margin: auto;
+        border-radius: 8px;
+    }}
+
+    .tooltip {{
+        position: relative;
+        cursor: help;
+        font-size: 24px;
+        font-weight: bold;
+        color: #1b3865;
+    }}
+
+    .tooltiptext {{
+        visibility: hidden;
+        width: 900px;
+        max-width: 80vw;
+        background-color: #ffffcc;
+        color: #1b3865;
+        text-align: left;
+        padding: 12px;
+        border-radius: 8px;
+
+        position: absolute;
+        z-index: 999;
+        top: 120%;
+        left: 50%;
+        transform: translateX(-50%);
+
+        font-size: 16px;
+        line-height: 1.5;
+
+        box-shadow: 0px 4px 12px rgba(0,0,0,0.15);
+        border: 1px solid #ddd;
+    }}
+
+    .tooltip:hover .tooltiptext {{
+        visibility: visible;
+    }}
+    </style>
+
+    <div class="title-box">
+        <span class="tooltip">
+            {texto} ⓘ
+            <span class="tooltiptext">
+                {explicacion if explicacion else ""}
+            </span>
+        </span>
+    </div>
+    """
+
+    st.markdown(html, unsafe_allow_html=True)
+
+
+
+#***************************ventana 2 *************************************
+
+
     
+def titulo_con_ventana_informativa2 (texto, explicacion=None,color="white"):
+
+    # limpiar texto para evitar saltos raros
+    if explicacion:
+        explicacion = " ".join(explicacion.split())
+
+    html = f"""
+    <style>
+    .title-box {{
+        width: 70%;
+        background-color: {color};
+        text-align: center;
+        padding: 5px;
+        margin: auto;
+        border-radius: 8px;
+    }}
+
+    .tooltip {{
+        position: relative;
+        cursor: help;
+        font-size: 24px;
+        font-weight: bold;
+        color: #1b3865;
+    }}
+
+    .tooltiptext {{
+        visibility: hidden;
+        width: 900px;
+        max-width: 80vw;
+        background-color: #ffffcc;
+        color: #1b3865;
+        text-align: left;
+        padding: 12px;
+        border-radius: 8px;
+
+        position: absolute;
+        z-index: 999;
+        top: 120%;
+        left: 50%;
+        transform: translateX(-50%);
+
+        font-size: 16px;
+        line-height: 1.5;
+
+        box-shadow: 0px 4px 12px rgba(0,0,0,0.15);
+        border: 1px solid #ddd;
+    }}
+
+    .tooltip:hover .tooltiptext {{
+        visibility: visible;
+    }}
+    </style>
+
+    <div class="title-box">
+        <span class="tooltip">
+            {texto} ⓘ
+            <span class="tooltiptext">
+                {explicacion if explicacion else ""}
+            </span>
+        </span>
+    </div>
+    """
+
+    st.markdown(html, unsafe_allow_html=True)

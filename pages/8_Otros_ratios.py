@@ -40,31 +40,6 @@ años=ut.procesar_array (años)
 
 
 
-#***************************************************** Current ratio **********************************************
-
-h3_especial("current Ratio")
-
-activo_cp=ex.activo_cp(df_balance)
-pasivos_cp=ex.pasivos_cp(df_balance)
-
-
-ratio_corrientes= rt.dividir_y_convertir_a_porcentaje(activo_cp,pasivos_cp)
-ratio_corrientes= [round(x/100,2) if isinstance(x, (int, float)) else x for x in ratio_corrientes]
-
-lim_sup = 10*[1.5]
-lim_inf=10*[1]
-
-
-gr.graficar_tres_lineas(ratio_corrientes, lim_sup, lim_inf,"olive","lightgreen","coral", eje_x=años, etiquetas=("ratio corrientes","limite_sano","limite_no aceptable"), eje_y="solvencia corrientes")
-
-
-ut.mostrar_dos_arrays_texto(años, ratio_corrientes ,"ratio corrientes")
-
-
-
-
-
-
 
 #*****************************************************Patrimonio neto **********************************************
 

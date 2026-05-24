@@ -105,7 +105,7 @@ ut.mostrar_tabla_tres_celdas("CAGR", "Dividendo accion", cagr)
 
 #*********************************************** Pay out *****************
 
-h3_especial("Dividendos por accion")
+h3_especial("Pay out")
 
 dividendos=dividendos
 beneficio=ex.beneficio(df_resultado)
@@ -121,3 +121,36 @@ lim_sup=10*[85]
 gr.graficar_tres_lineas(pay_out, pay_out_fcf, lim_sup,"#F06616","#AA7EF0","#FF0000", eje_x=años, etiquetas=("Pay out beneficio neto","Pay out FCF","Limite recomendable"), eje_y="Margenes %")
 
 ut.mostrar_tres_arrays_texto(años,pay_out,pay_out_fcf,"pay_out sobre beneficio", "pay_out sobre FCF")
+
+
+
+
+
+#***********************************************FCF - Dividendos  *****************
+
+h3_especial("Free cash Flow - Dividendos")
+
+fcf=fcf
+dividendos=ex.dividendos(df_flujo)
+
+dividendos = [-x for x in dividendos]
+
+pay_out_fcf= ut.divide_listas (dividendos,fcf)
+pay_out_fcf = [round(100*x) for x in pay_out_fcf]
+pay_out_fcf_texto = [f"{x} %" for x in pay_out_fcf]
+
+
+gr.graficar_2barras (fcf, dividendos, 
+                     color1="#628585", color2="#F7A354",
+                     eje_x=años,
+                     etiquetas=("FCF","Dividendos"),
+                     eje_y="Valores")
+
+
+cagr=rt.calcular_cagr(fcf)
+ut.mostrar_tabla_tres_celdas("CAGR", "FCF", cagr)
+cagr=rt.calcular_cagr(dividendos)
+ut.mostrar_tabla_tres_celdas("CAGR", "Dividendos", cagr)
+
+
+ut.mostrar_tabla_4_listas(años,fcf,dividendos,pay_out_fcf_texto,"FCF","Dividendos", "Pay-out (FCF)%")

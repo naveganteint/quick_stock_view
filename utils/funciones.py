@@ -270,16 +270,29 @@ def resta_listas (lista1,lista2):
 
 #*********************************************dividir listas ******************
 
-def divide_listas (lista1,lista2):
-    
-    try:
-        lista3=[ round((a if isinstance(a, (int, float)) else 0) /
-        (b if isinstance(b, (int, float)) else 0),2)
-        for a, b in zip(lista1, lista2) ]
-    except:
-        lista3= 10 * [1]  
+def divide_listas(lista1, lista2):
 
-    return lista3
+    resultado = []
+
+    for a, b in zip(lista1, lista2):
+
+        # validar valores
+        if a is None or b is None:
+            resultado.append(None)
+            continue
+
+        if not isinstance(a, (int, float)) or not isinstance(b, (int, float)):
+            resultado.append(None)
+            continue
+
+        # evitar división por 0
+        if abs(b) < 1e-9:
+            resultado.append(None)
+            continue
+
+        resultado.append(round(a / b, 2))
+
+    return resultado
 
 #******************************************mostrar tabla 4 listas *****************************************
 
@@ -902,5 +915,219 @@ def crear_tabla_4_listas(lista1, lista2, lista3, lista4, texto1, texto2, texto3)
 
 
 
+#*************************************************tooltip**************
 
 
+def tooltip(texto, explicacion):
+    explicacion = " ".join(explicacion.split())
+
+    return f'<span title="{explicacion}">{texto}</span>'
+
+
+
+#**************************************mostrar dos array con titulo y explicacion
+
+    
+def mostrar_dos_arrays_texto_explicacion(lista1, lista2 ,texto,explicacion):
+        # Validar longitudes
+    if len(lista1) != len(lista2):
+        raise ValueError("Las listas deben tener la misma longitud")
+
+    # Crear encabezado (años)
+    columnas = ["años"] + lista1
+
+    # Crear fila de datos
+    
+    fila = [tooltip(texto+" ⓘ", explicacion)] + lista2
+
+    # Crear DataFrame
+    df = pd.DataFrame([fila], columns=columnas)
+    
+    # Convertir DataFrame a HTML
+    html_table = df.to_html(index=False, header=True,table_id="tabla_2lista",escape=False,)
+    
+    css ="""
+    <style>
+    table.dataframe#tabla_2lista {
+      
+        width: auto;            /* ancho automático según contenido */
+        border-collapse: collapse;
+        margin-left: auto;
+        margin-right: auto;     /* centra la tabla */
+}
+
+  
+
+    table.dataframe#tabla_2lista tbody tr{
+        background-color: white;
+        text-align: center;
+        padding: 2px;
+    }
+
+    
+    table#tabla_2lista thead th {
+        background-color: #D9E6E7;   
+        text-align: center;
+        padding: 1px;
+    }
+    
+
+
+
+
+
+
+    /* Opcional: bordes de celdas */
+    table.dataframe td {
+        border: 1px solid #ccc;
+    }
+    </style>
+    """
+    
+
+  
+    
+    # Mostrar CSS y tabla
+    st.markdown(css, unsafe_allow_html=True)
+    st.markdown(html_table, unsafe_allow_html=True)
+
+
+# ----------------------------------------- variacion absoluta --------------------------
+
+def variacion_absoluta(lista):
+    resultado = ["-"]  # primer elemento
+
+    for i in range(1, len(lista)):
+        anterior = lista[i-1]
+        actual = lista[i]
+
+        if (
+            isinstance(anterior, (int, float)) and
+            isinstance(actual, (int, float))
+        ):
+            variacion = actual - anterior
+            resultado.append(f"{variacion:.2f}")
+        else:
+            resultado.append("-")
+
+    return resultado
+
+
+# ----------------------------------------- variacion absoluta --------------------------
+
+def limpiar_lista_numerica(lista):
+    return [
+        float(x) if x != "-" else None
+        for x in lista
+    ]
+
+
+        
+
+# *************************************************** mostrar tabla 5 listas
+
+
+def crear_tabla_5_listas(lista1, lista2, lista3, lista4,lista5, texto1, texto2, texto3,texto4):
+        """
+        Crea una tabla de 4 filas:
+        
+        - Fila 1: "años" + lista1
+        - Fila 2: texto1 + lista2
+        - Fila 3: texto2 + lista3
+        - Fila 4: texto3 + lista4
+        """
+
+        # Validar longitudes
+        n = len(lista1)
+        if not (len(lista2) == len(lista3) == len(lista4) == len (lista5) ):
+            raise ValueError("Todas las listas deben tener la misma longitud")
+
+
+
+        # Crear DataFrame
+        df = pd.DataFrame(
+            [lista2, lista3, lista4,lista5],
+            columns=lista1  # 👈 los años como columnas
+        )
+
+        # Añadir primera columna con etiquetas
+        df.insert(0, "años", [texto1, texto2, texto3,texto4])
+
+      
+
+        # Convertir DataFrame a HTML
+        html_table = df.to_html(index=False, header=True,table_id="tabla_5lista",escape=False,)
+        
+        css ="""
+        <style>
+        table.dataframe#tabla_5lista {
+        
+            width: auto;            /* ancho automático según contenido */
+            border-collapse: collapse;
+            margin-left: auto;
+            margin-right: auto;     /* centra la tabla */
+        }
+    
+        table.dataframe#tabla_5lista tbody tr{
+           
+            text-align: center;
+  
+        }
+
+      
+        table#tabla_5lista thead th {
+            background-color: #D9E6E7;   
+            text-align: center;
+    
+        }
+        
+
+
+
+        /* Opcional: bordes de celdas */
+        table.dataframe td {
+            border: 1px solid #ccc;
+        }
+
+        table.dataframe#tabla_5lista tbody tr:nth-child(4) td {
+        background-color: #E7D6FC !important;
+        }
+
+        table.dataframe#tabla_5lista tbody td:first-child {
+            font-weight: bold;
+        }
+        
+        table#tabla_5lista td {
+        line-height: 1.2; /* más compacto */
+
+        </style>
+
+
+
+
+        """
+        
+
+    
+        
+        # Mostrar CSS y tabla
+        st.markdown(css, unsafe_allow_html=True)
+        st.markdown(html_table, unsafe_allow_html=True)   
+
+
+
+#************************************ Funcion menu de botones Valoracion*************************************
+
+def menu_valoracion(prefix="menu"):
+    col1, col2, col3, col4, col5 = st.columns(5)
+
+    if col2.button("Gorka", key=f"{prefix}_gorka"):
+        return "gorka"
+
+    if col3.button("Guillem", key=f"{prefix}_guillem"):
+        st.switch_page("pages/8_Deuda.py")
+
+    if col4.button("Inicio", key=f"{prefix}_inicio"):
+        st.switch_page("pages/9_Valoracion.py")
+
+    return "main"

@@ -6,8 +6,8 @@ import utils.graficas as gr
 
 import pandas as pd
 import analisis.fuente as ex
-from styles.style_utils import aplicar_estilos, h3_especial
-
+from styles.style_utils import aplicar_estilos, h3_especial,titulo_con_ventana_informativa
+from utils.definiciones import DEFINICIONES
 
 
 st.markdown(
@@ -116,8 +116,290 @@ roic=ut.divide_listas(nopat,capital_invertido)
 
 
 linea15=10*[15]
-roe=[round (x*100,0) for x in roe]
-roic=[round (x*100,0) for x in roic]
 
+roe = [
+    round(x * 100, 0) if x is not None else None
+    for x in roe
+]
+
+roic = [
+    round(x * 100, 0) if x is not None else None
+    for x in roic
+]
 
 gr.graficar_tres_lineas(roe,roic,linea15,"#8287CE","#C7D31A","#F74444", eje_x=años, etiquetas=("Roe","Roic","15%"), eje_y="Rentabilidad")
+
+
+#***********************************************cfo - capex *****************
+
+h3_especial("Flujo de caja operativo - capex")
+
+fco=ex.FCO(df_flujo)
+capex=ex.capex(df_flujo)
+capex_positivo = [-x for x in capex]
+
+ratio=ut.divide_listas(capex_positivo,fco)
+ratio = [round(x*100,2) for x in ratio]
+ratio_texto = [f"{x:.0f} %" for x in ratio]
+
+gr.graficar_2barras (fco, capex_positivo, 
+                     color1="#C296C4", color2="#BAC57D",
+                     eje_x=años,
+                     etiquetas=("Flujo de caja","Capex"),
+                     eje_y="Valores")
+
+ut.mostrar_tabla_4_listas(años,fco,capex_positivo,ratio_texto,"Flujo de caja","Capex", "% capex/fco")
+
+
+
+
+
+
+
+
+#***************************************************** Cash conversion rate  **********************************************
+
+
+titulo_con_ventana_informativa ("Cash conversion rate", DEFINICIONES["ccr"])
+
+ebitda=ex.ebitda(df_resultado)
+fco=ex.FCO(df_flujo)
+
+gr.graficar_2barras (fco, ebitda, 
+                     color1="#2C5834", color2="#CE9C30",
+                     eje_x=años,
+                     etiquetas=("FCO","Ebitda"),
+                     eje_y="Valores")
+
+cash_conversion_rate=ut.divide_listas (fco,ebitda)
+cash_conversion_rate= [round (x*100,0) for x in cash_conversion_rate]
+cash_conversion_rate = [f"{x:.0f} %" for x in cash_conversion_rate]
+
+
+
+ut.mostrar_dos_arrays_texto_explicacion(años, cash_conversion_rate,"Cash conversion rate",DEFINICIONES["ccr"])
+
+
+
+
+
+#***************************************************** ISGR + CALIDAD CRECIMIENTO **********************************************
+
+titulo_con_ventana_informativa ("ISGR (Relación inventarios con ventas)", DEFINICIONES["ISGR"])
+
+inventarios = ex.inventarios(df_balance)
+gr.grafica_columnas(años, inventarios, "Años", "Inventarios", "#778FE0")
+variacion1 = ut.variacion_porcentual(inventarios)
+ut.mostrar_tres_arrays_texto(años, inventarios, variacion1, "Inventarios", "Variación Inventarios")
+
+ventas = ex.ventas(df_resultado)
+gr.grafica_columnas(años, ventas, "Años", "Ventas", "#61D7F5")
+variacion2 = ut.variacion_porcentual(ventas)
+ut.mostrar_tres_arrays_texto(años, ventas, variacion2, "Ventas", "Variación Ventas")
+
+
+# -----------------------
+# LIMPIEZA DATOS
+# -----------------------
+def limpiar_lista(lista):
+    return [
+        None if (x == "-" or x is None) else float(x.replace("%", "").strip())
+        for x in lista
+    ]
+
+variacion1_clean = limpiar_lista(variacion1)
+variacion2_clean = limpiar_lista(variacion2)
+
+
+# -----------------------
+# ISGR
+# -----------------------
+ratio_entre_variaciones = ut.divide_listas(variacion1_clean, variacion2_clean)
+
+
+ # -----------------------
+ # Funcion clasificar isgr, inventarios y ventas
+ # -----------------------
+
+
+def clasificar_empresa(delta_ventas, delta_inventarios, isgr):
+
+    resultados = []
+
+    for v, inv, g in zip(delta_ventas, delta_inventarios, isgr):
+
+        # -----------------------
+        # VALIDACIÓN
+        # -----------------------
+        if v is None or inv is None or g is None:
+            resultados.append({
+                "relacion": "⚪",
+                "caso": "⚪",
+                "tipo": "Sin datos",
+                "explicacion": "Datos insuficientes"
+            })
+            continue
+
+        # -----------------------
+        # CASO 1: ↑ ventas / ↓ inventarios
+        # -----------------------
+        if v > 0 and inv < 0:
+            relacion = "🟢 ↓↑"
+
+            if g < 0:
+                caso = "🔵"
+                tipo = "Eficiencia extrema"
+                exp = "Ultra eficiencia operativa"
+
+            elif 0 <= g <= 1:
+                caso = "🟢"
+                tipo = "Eficiente"
+                exp = "Crecimiento sano con eficiencia"
+
+            else:
+                caso = "🟡"
+                tipo = "Infra-stock"
+                exp = "Posible falta de inventario"
+
+        # -----------------------
+        # CASO 2: ↑ ventas / ↑ inventarios
+        # -----------------------
+        elif v > 0 and inv > 0:
+            relacion = "🟡 ↑↑"
+
+            if g < 1:
+                caso = "🟢"
+                tipo = "Crecimiento equilibrado"
+                exp = "Crecimiento ordenado"
+
+            elif 1 <= g <= 2:
+                caso = "⚠️"
+                tipo = "Tensión de crecimiento"
+                exp = "Inventarios creciendo con ventas"
+
+            else:
+                caso = "🚨"
+                tipo = "Sobreexpansión"
+                exp = "Riesgo de acumulación"
+
+        # -----------------------
+        # CASO 3: ↓ ventas / ↑ inventarios
+        # -----------------------
+        elif v < 0 and inv > 0:
+            relacion = "🔴 ↑↓"
+
+            if g < 0:
+                caso = "🚨"
+                tipo = "Destrucción de demanda"
+                exp = "Ventas caen + stock sube"
+
+            elif 0 <= g <= 1:
+                caso = "🔴"
+                tipo = "Deterioro"
+                exp = "Acumulación de stock con caída de ventas"
+
+            else:
+                caso = "💥"
+                tipo = "Colapso operativo"
+                exp = "Distorsión fuerte en el modelo"
+
+        # -----------------------
+        # CASO 4: ↓ ventas / ↓ inventarios
+        # -----------------------
+        elif v < 0 and inv < 0:
+            relacion = "🟠 ↓↓"
+
+            if g < 0:
+                caso = "🟡"
+                tipo = "Ajuste eficiente"
+                exp = "Limpieza ordenada con caída de actividad"
+
+            elif 0 <= g <= 1:
+                caso = "🟠"
+                tipo = "Contracción normal"
+                exp = "Reducción controlada del negocio"
+
+            else:
+                caso = "🔴"
+                tipo = "Contracción desordenada"
+                exp = "Caída del negocio con tensión operativa"
+
+        # -----------------------
+        # CASO NEUTRO
+        # -----------------------
+        else:
+            relacion = "⚪ 0"
+            caso = "⚪"
+            tipo = "Neutro"
+            exp = "Combinación no estándar"
+
+        resultados.append({
+            "relacion": relacion,
+            "caso": caso,
+            "tipo": tipo,
+            "explicacion": exp
+        })
+
+    return resultados
+
+
+
+
+# -----------------------
+# EJECUCIÓN
+# -----------------------
+resultado = clasificar_empresa(
+    variacion2_clean,
+    variacion1_clean,
+    ratio_entre_variaciones
+)
+
+
+# -----------------------
+# TABLA FINAL
+# -----------------------
+data = []
+
+for i in range(len(años)):
+
+    data.append({
+        "Año": años[i],
+        "Relacion I-V": resultado[i]["relacion"],
+        "Δ Inventarios": variacion1[i],
+        "Δ Ventas": variacion2[i],
+        "Motivo": resultado[i]["tipo"],
+        
+        "ISGR": "-" if ratio_entre_variaciones[i] is None else round(ratio_entre_variaciones[i], 2),
+        "caso": resultado[i]["caso"], 
+        "Explicación": resultado[i]["explicacion"]
+
+    })
+
+df_isgr = pd.DataFrame(data)
+
+html_table = df_isgr.to_html(index=False, escape=False, table_id="tabla_isgr")
+
+css = """
+<style>
+table.dataframe#tabla_isgr {
+    margin-left: auto;
+    margin-right: auto;
+    border-collapse: collapse;
+}
+
+table#tabla_isgr thead th {
+    background-color: #D9E6E7;
+    text-align: center;
+    padding: 6px;
+}
+
+table#tabla_isgr td {
+    border: 1px solid #ccc;
+    padding: 6px;
+    text-align: center;
+}
+</style>
+"""
+
+st.markdown(css, unsafe_allow_html=True)
+st.markdown(html_table, unsafe_allow_html=True)
