@@ -148,34 +148,40 @@ La relación entre ventas e inventarios generan 4 escenarios básicos:
 "relacion deuda-caja":
 
 """
-Este análisis muestra la relación entre la variación de la caja y la emision de deuda neta .
+Este análisis evalúa la situación financiera de la empresa combinando tres variables clave:
 
-<BR>El objetivo es entender si la deuda está realmente generando liquidez o si se está utilizando sin reflejarse en caja.
+<BR>•	Δ caja (variación de caja): indica si la empresa genera o consume liquidez
+<BR>•	Emisión de deuda: refleja si la empresa se financia mediante nueva deuda o la reduce
+<BR>•	Δ deuda neta: muestra el resultado final del endeudamiento tras considerar la caja
+<BR>
+<BR>Estados posibles:
+<BR>🟢 Situación positiva (fortaleza financiera) Indica capacidad de autofinanciación y solidez operativa. Se da cuando:
+<BR>-La empresa reduce deuda y genera caja,
+<BR>-No hay cambios en deuda pero la caja aumenta
+<BR>-Se emite deuda y esta se convierte eficientemente en liquidez
+<BR>
+<BR>🟡 Situación intermedia (neutral / vigilancia) Indica una situación estable pero con menor calidad financiera
+La empresa:
+<BR>-Reduce deuda pero consume caja
+<BR>-Aumenta deuda pero también incrementa caja
+<BR>-No presenta cambios claros en deuda o liquidez
 
-<BR>Se comparan tres variables:
-<BR>- Δ Caja: variación real de la liquidez de la empresa
-<BR>- Net Issuance of Debt: entrada o salida neta de financiación mediante deuda
-<BR>- Δ Deuda neta: cambio total del endeudamiento
+<BR>
+<BR>🚨 Situación de alerta (riesgo financiero), La deuda neta crece más que la emisión de deuda. Señal de presión financiera, posible deterioro operativo o uso ineficiente de la deuda.
+<BR>- implica pérdida de caja no explicada por financiación
+<BR>-O bien: La empresa se endeuda mientras la caja cae
+<BR>
+<BR>No basta con ver si la deuda sube o baja. Lo realmente importante es entender: si el cambio en deuda está respaldado por generación de caja o no
+<BR>
+<BR>En condiciones normales, la Δ deuda neta debería explicarse por la relación entre diferencia entre la emisión de deuda y la Δ caja. Sin embargo, pueden existir diferencias debido a diversos factores no operativos o contables.
+<BR>
+<BR>Estas desviaciones pueden deberse a:
 
-<BR>A partir de estas variables se evalúa la calidad del uso de la deuda:
-
-<BR><BR>🟢 ESCENARIO SANO
-<BR>La emisión de deuda se traduce en un aumento proporcional de caja.
-<BR>La financiación se convierte en liquidez real y controlada.
-
-<BR><BR>🟡 ESCENARIO INTERMEDIO
-<BR>La empresa emite deuda pero la caja aumenta de forma limitada.
-<BR>Esto indica que parte de la financiación se está utilizando en inversión o en la operativa del negocio.
-
-<BR><BR>🔴 ESCENARIO PELIGROSO
-<BR>La empresa se endeuda pero la caja disminuye.
-<BR>Esto sugiere que la deuda no está generando liquidez, sino que se está utilizando para cubrir necesidades operativas o pérdidas.
-
-<BR><BR>🚨 ESCENARIO CRÍTICO
-<BR>La deuda neta crece más rápido que la emisión de deuda.
-<BR>Esto indica presión financiera: la caja se está reduciendo más de lo que la deuda explica, señal de deterioro de liquidez.
-
-<BR><BR>En conjunto, este análisis permite evaluar si la deuda está fortaleciendo la posición de liquidez o si está siendo absorbida sin generar caja.
+<BR>• Ajustes contables: efectos por tipo de cambio o valoración a mercado de la deuda
+<BR>• Reclasificaciones de deuda: cambios entre corto y largo plazo u otras categorías
+<BR>• Operaciones corporativas (M&A): adquisiciones o ventas que alteran la deuda consolidada
+<BR>• Intereses acumulados: costes financieros que aumentan la deuda pero no se reflejan como emisión
+<BR>• Cambios en el perímetro contable: incorporación o exclusión de filiales en el grupo
 
 """
 

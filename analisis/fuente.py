@@ -759,7 +759,17 @@ def dividendos(df):
     return lista
 
 
+def other_cash_financing(df):
 
+    fila=ut.buscar_fila(df, "Cash Paid for Dividends")
+    try:
+        lista=ut.fila_a_array (df,fila+2)
+    except :
+        lista= 10* [0]
+
+    lista=ut.limpiar_a_numeros(lista)
+
+    return lista
 
 
 

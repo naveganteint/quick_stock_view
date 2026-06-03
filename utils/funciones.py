@@ -1131,3 +1131,25 @@ def menu_valoracion(prefix="menu"):
         st.switch_page("pages/9_Valoracion.py")
 
     return "main"
+
+
+#************************************ Multiplica listas n*******
+
+def multiplica_listas(lista1, lista2):
+
+    resultado = []
+
+    for a, b in zip(lista1, lista2):
+
+        # validar valores
+        if a is None or b is None:
+            resultado.append(None)
+            continue
+
+        if not isinstance(a, (int, float)) or not isinstance(b, (int, float)):
+            resultado.append(None)
+            continue
+
+        resultado.append(round(a * b, 2))
+
+    return resultado

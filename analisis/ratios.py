@@ -54,29 +54,31 @@ def promedio(lista):
 
 
 def calcular_cagr(lista):
-    """
-    Calcula el CAGR (tasa de crecimiento anual compuesto)
-    entre el primer y último valor de una lista.
-    """
 
-    # Validaciones
     if not lista or len(lista) < 2:
-        raise ValueError("La lista debe tener al menos 2 valores")
+        return "N/A"
 
     valor_inicial = lista[0]
     valor_final = lista[-1]
     n = len(lista)
 
     if valor_inicial == 0:
-        valor_inicial=0.01
+        return "N/A"
 
-    # Fórmula CAGR
+    # 🔴 Casos especiales
+    if valor_inicial < 0 and valor_final > 0:
+        return "Calculo no posible, comienza en (neg) 📈"
+
+    if valor_inicial > 0 and valor_final < 0:
+        return "Calculo no posible, termina en (Neg) 📉"
+
+    if valor_inicial < 0 and valor_final < 0:
+        return "Calculo no posible, termina en (Neg) 📉"
+
+    # 🟢 Caso normal
     cagr = (valor_final / valor_inicial) ** (1 / (n - 1)) - 1
 
-    cagr = f"{cagr*100:.2f} %"
-
-
-    return cagr
+    return f"{cagr*100:.2f} %"
 
 
 #********************************************tax ratio **********************************

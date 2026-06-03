@@ -15,7 +15,7 @@ def aplicar_estilos():
         [data-testid="stSidebarNav"] a {
             display: block;
             width: 100%;
-            padding: 10px 12px;
+            padding: 8.5px 12px;
             border-radius: 8px;
             transition: all 0.3s ease;
             background-color: #F0E68C;  /* color de fondo constante */

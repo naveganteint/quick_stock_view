@@ -5,7 +5,8 @@ from io import BytesIO
 import base64
 import matplotlib.pyplot as plt
 import re
-
+import plotly.graph_objects as go
+import numpy as np
 
 
 ######################################################### grafica de dos barras ************************************************
@@ -467,5 +468,243 @@ def graficar_barras_apiladas_y_linea(lista1, lista2, lista3, lista4,
 
 
 
-    
+#****************************Asignar capital******************************
+
+
+
+
+
+def asignar_capital(valores, etiquetas,
+                    color_total="#345E41",
+                    titulo="Flujo de caja"):
+
+    import plotly.graph_objects as go
+    import streamlit as st
+
+    n = len(valores)
+
+    measure = ["absolute"] + ["relative"] * (n - 2) + ["total"]
+
+    fig = go.Figure(go.Waterfall(
+        x=etiquetas,
+        y=valores,
+        measure=measure,
+
+        increasing={"marker": {"color": "#2E8B57"}},
+        decreasing={"marker": {"color": "#C0392B"}},
+        totals={"marker": {"color": color_total}},
+
+        connector={"line": {"color": "gray"}},
+
+        # 👇 ESTO VA AQUÍ (NO en update_layout)
+        text=[str(v) if v is not None else "" for v in valores],
+        textposition="outside"
+    ))
+
+    fig.add_hline(
+    y=0,
+    line_color="#1B1B1B",
+    line_width=1,
+    opacity=0.5,
+    layer="below" 
+    )
+
+
+
+
+    fig.update_layout(
+        title=titulo,
+        showlegend=False,
+        width=700,
+        height=500,
+
+        font=dict(color="#1a1a1a"),
+
+        xaxis=dict(
+            tickfont=dict(color="#000000", size=14)
+        ),
+
+        yaxis=dict(
+            tickfont=dict(color="#000000", size=12)
+        )
+    )
+
+    col1, col2, col3 = st.columns([1, 4, 1])
+
+    with col2:
+        st.plotly_chart(fig, width="stretch")
+
+
+
+
+
+
+
+  ######################################################### grafica N barras ************************************************
+
+
+def graficar_n_barras(listas, 
+                     colores=None,
+                     eje_x=None,
+                     etiquetas=None,
+                     eje_y="Valores"):
+
+    n_series = len(listas)   # número de barras (ej: 9)
+    n = len(listas[0])       # número de categorías
+
+    # Validar que todas las listas tengan la misma longitud
+    for lista in listas:
+        if len(lista) != n:
+            raise ValueError("Todas las listas deben tener la misma longitud")
+
+    # Eje X
+    if eje_x is None:
+        eje_x = list(range(n))
+
+    if len(eje_x) != n:
+        raise ValueError("El eje X debe tener la misma longitud")
+
+    # Etiquetas
+    if etiquetas is None:
+        etiquetas = [f"Serie {i+1}" for i in range(n_series)]
+
+    # Colores
+    if colores is None:
+        colores = plt.cm.tab10.colors[:n_series]
+
+    # Crear figura
+    fig, ax = plt.subplots(figsize=(10, 5))
+
+    x = list(range(n))
+    width = 0.8 / n_series   # 👈 clave: repartir espacio
+
+    # Dibujar barras
+    for i, lista in enumerate(listas):
+        desplazamiento = (i - n_series/2) * width + width/2
+
+        ax.bar([xi + desplazamiento for xi in x],
+               lista,
+               width=width,
+               label=etiquetas[i],
+               color=colores[i])
+
+    # Eje X
+    ax.set_xticks(x)
+    ax.set_xticklabels(eje_x)
+    ax.set_axisbelow(True)
+
+    # Estilo
+    for spine in ax.spines.values():
+        spine.set_visible(False)
+
+    ax.set_xlabel("Año", fontsize=12, color='gray')
+    ax.set_ylabel(eje_y, fontsize=12, color='gray')
+
+    ax.yaxis.grid(True, linestyle='-', linewidth=0.5, alpha=0.7)
+    ax.axhline(y=0, linewidth=1)
+
+    ax.legend(ncol=3)  # 👈 útil cuando hay muchas series
+
+    plt.tight_layout()
+
+    # Exportar a imagen
+    buf = BytesIO()
+    fig.savefig(buf, format="png", bbox_inches='tight')
+    buf.seek(0)
+
+    img_base64 = base64.b64encode(buf.read()).decode()
+
+    st.markdown(f"""
+    <div style="display:flex; justify-content:center;">
+        <img src="data:image/png;base64,{img_base64}" width="900px">
+    </div>
+    """, unsafe_allow_html=True) 
+  
+
+
+
+  
+
+
+
+#··········································graficas de barras 1+ 2 en 1 y con linea
+
+
+
+def graficar_barra_y_apilada(lista1, lista2, lista3,
+                              color1, color2, color3,
+                              eje_x=None,
+                              etiquetas=None,
+                              eje_y_izq="Valores",
+                              eje_y_der="Ratio (%)"):
+
+    # 🔴 validar longitud correcta
+    n = len(lista1)
+    if not (len(lista2) == len(lista3) == n):
+        raise ValueError("Todas las listas deben tener la misma longitud")
+
+    # Eje X
+    if eje_x is None:
+        eje_x = list(range(n))
+
+    if len(eje_x) != n:
+        raise ValueError("El eje X debe tener la misma longitud")
+
+    # Etiquetas
+    if etiquetas is None:
+        etiquetas = ["Barra 1", "Parte 1", "Parte 2"]
+
+    fig, ax = plt.subplots(figsize=(8, 4))
+
+    x = range(n)
+    width = 0.35
+
+    # 🔵 barra individual
+    ax.bar([i - width/2 for i in x], lista1,
+           width=width, label=etiquetas[0], color=color1)
+
+    # 🟢 apilada
+    ax.bar([i + width/2 for i in x], lista2,
+           width=width, label=etiquetas[1], color=color2)
+
+    ax.bar([i + width/2 for i in x], lista3,
+           width=width, bottom=lista2,
+           label=etiquetas[2], color=color3)
+
+    # 🔴 eje X (FIX IMPORTANTE)
+    ax.set_xticks(list(x))
+    ax.set_xticklabels(eje_x, rotation=45, ha="right", fontsize=10)
+
+    # estilo limpio
+    for spine in ax.spines.values():
+        spine.set_visible(False)
+
+    ax.set_xlabel("Año", fontsize=12, color='gray')
+    ax.set_ylabel(eje_y_izq, fontsize=12, color='gray')
+
+    ax.tick_params(axis='x', colors='gray')
+    ax.tick_params(axis='y', colors='gray')
+
+    ax.yaxis.grid(True, color='gray', linestyle='-', linewidth=0.5)
+    ax.axhline(y=0, color='black', linewidth=1)
+    ax.set_axisbelow(True)
+
+    # leyenda
+    ax.legend()
+
+    plt.tight_layout()  # 🔥 clave para evitar solapes
+
+    # export
+    buf = BytesIO()
+    fig.savefig(buf, format="png", bbox_inches='tight', dpi=150)
+    buf.seek(0)
+
+    img_base64 = base64.b64encode(buf.read()).decode()
+
+    st.markdown(f"""
+    <div style="display:flex; justify-content:center;">
+        <img src="data:image/png;base64,{img_base64}" width="700px">
+    </div>
+    """, unsafe_allow_html=True)
+
 

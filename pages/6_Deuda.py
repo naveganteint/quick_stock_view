@@ -290,7 +290,7 @@ st.write("")
 st.write("")
 st.write("")
 
-#*********************************************** Relacion deuda con caja *****************
+
 
 
 titulo_con_ventana_informativa ("Relación deuda con caja", DEFINICIONES["relacion deuda-caja"])
@@ -299,24 +299,18 @@ titulo_con_ventana_informativa ("Relación deuda con caja", DEFINICIONES["relaci
 
 delta_deuda_neta = [float(x) if x != "-" else 0 for x in delta_deuda_neta]
 
-gr.graficar_2barras (emision_deuda, delta_deuda_neta, 
-                     color1="#F33A3A", color2="#F19797",
-                     eje_x=años,
-                     etiquetas=("Emision deuda","Δ Deuda_neta"),
-                     eje_y="Valores")
+gr.grafica_columnas(años,deuda_neta,"Años","Deuda neta","#E95151")
+cagr=rt.calcular_cagr(deuda_neta)
+
+variacion_por=ut.variacion_porcentual(deuda_neta)
+
+#ut.mostrar_dos_arrays_texto (años,delta_deuda_neta,"variacion deuda")
+ut.mostrar_tres_arrays_texto(años,delta_deuda_neta,variacion_por,"Δ Deuda_neta","Δ Porcentual")
+
+ut.mostrar_tabla_tres_celdas("CAGR", "Deuda_neta", cagr)
 
 
 
-dif_var_deuda=ut.resta_listas(emision_deuda,delta_deuda_neta)
-ut.mostrar_tabla_4_listas(años,emision_deuda,delta_deuda_neta,dif_var_deuda,"Emision deuda","Δ Deuda neta","Diferencia")
-
-
-
-
-
-
-st.write("")
-st.write("")
 
 def analizar_deuda_vs_caja(delta_cash, net_debt_issuance, delta_net_debt=None):
 
@@ -328,8 +322,14 @@ def analizar_deuda_vs_caja(delta_cash, net_debt_issuance, delta_net_debt=None):
         except:
             return None
 
-
-
+    def direction(x):
+        if x is None:
+            return "→"
+        if x > 0:
+            return "↑"
+        if x < 0:
+            return "↓"
+        return "→"
 
     resultados = []
 
@@ -338,138 +338,170 @@ def analizar_deuda_vs_caja(delta_cash, net_debt_issuance, delta_net_debt=None):
     for i in range(n):
 
         # -----------------------
-        # LIMPIEZA DE DATOS
+        # LIMPIEZA
         # -----------------------
         dc = safe_float(delta_cash[i])
         ndi = safe_float(net_debt_issuance[i])
+        dnd = safe_float(delta_net_debt[i]) if delta_net_debt is not None else None
 
-        dnd = None
-        if delta_net_debt is not None:
-            dnd = safe_float(delta_net_debt[i])
-
-        # si no hay datos mínimos, saltar
         if dc is None or ndi is None:
             resultados.append({
                 "icono": "⚪",
-                "explicacion": "Dato no disponible o inválido para este año"
+                "explicacion": "Dato no disponible o inválido para este año",
+                "Δ caja": "→",
+                "Emision Deuda": "→",
+                "Δ Deuda neta": "→"
             })
             continue
 
-        # -----------------------
-        # PRESSURE (solo si posible)
-        # -----------------------
-        pressure = None
-        if dnd is not None:
-            pressure = dnd - ndi
-
-        # -----------------------
-        # CLASIFICACIÓN PRINCIPAL
-        # -----------------------
+        gap = (dnd - ndi) if dnd is not None else None
 
         icono = "🟡"
         explicacion = "Sin clasificación"
 
-        # CASO: emisión neta de deuda
-        if ndi > 0:
+        # -----------------------
+        # DIRECCIONALIDAD
+        # -----------------------
+        delta_cash_dir = direction(dc)
+        emission_debt_dir = direction(ndi)
+        delta_net_debt_dir = direction(dnd)
 
-            if dc > 0:
+        # =========================================================
+        # CASO CON Δ DEUDA NETA
+        # =========================================================
+        if dnd is not None:
 
-                ratio = dc / ndi if ndi != 0 else None
+            if dnd < 0:
 
-                if ratio is not None and ratio > 0.8:
+                if dc > 0:
                     icono = "🟢"
-                    explicacion = (
-                        "La empresa emite deuda y la caja aumenta de forma proporcional. "
-                        "La financiación se traduce en liquidez real."
-                    )
+                    explicacion = "Reduce deuda y genera caja (autofinanciación fuerte)"
+
+                elif dc < 0:
+                    icono = "🟡"
+                    explicacion = "Reduce deuda consumiendo caja"
+
                 else:
                     icono = "🟡"
-                    explicacion = (
-                        "La empresa emite deuda pero la caja sube poco. "
-                        "Parte del capital se utiliza en operaciones o inversión."
-                    )
+                    explicacion = "Reduce deuda sin efecto en caja"
+
+            elif dnd > 0:
+
+                if gap is not None and gap > 0:
+                    icono = "🚨"
+                    explicacion = "Crecimiento de deuda neta superior a emisión → presión de caja"
+
+                else:
+
+                    if dc > 0:
+                        icono = "🟡"
+                        explicacion = "Emite deuda y aumenta caja"
+
+                    elif dc < 0:
+                        icono = "🚨"
+                        explicacion = "Se endeuda pero pierde caja"
+
+                    else:
+                        icono = "🟡"
+                        explicacion = "Aumento de deuda sin impacto en caja"
 
             else:
-                icono = "🔴"
-                explicacion = (
-                    "La empresa se endeuda pero la caja cae. "
-                    "La deuda no se convierte en liquidez → posible consumo operativo o pérdidas."
-                )
 
-        # CASO: reducción de deuda
-        elif ndi < 0:
+                if dc > 0:
+                    icono = "🟢"
+                    explicacion = "Caja positiva sin cambio de deuda"
 
-            if dc >= 0:
-                icono = "🟢"
-                explicacion = (
-                    "La empresa reduce deuda y genera caja. "
-                    "Fuerte capacidad de autofinanciación."
-                )
-            else:
-                icono = "🟡"
-                explicacion = (
-                    "La empresa amortiza deuda pero la caja cae. "
-                    "Uso de liquidez para repagar financiación."
-                )
+                elif dc < 0:
+                    icono = "🟡"
+                    explicacion = "Caja negativa sin cambio de deuda"
 
-        # CASO neutro
+                else:
+                    icono = "🟡"
+                    explicacion = "Estabilidad total"
+
+        # =========================================================
+        # CASO SIN Δ DEUDA NETA
+        # =========================================================
         else:
-            if dc > 0:
-                icono = "🟢"
-                explicacion = (
-                    "Sin movimiento de deuda y generación de caja positiva. "
-                    "Flujo operativo sólido."
-                )
-            else:
-                icono = "🟡"
-                explicacion = (
-                    "Sin movimiento de deuda y caja débil. "
-                    "Actividad neutra sin generación clara."
-                )
 
-        # -----------------------
-        # ALERTA CRÍTICA
-        # -----------------------
-        if pressure is not None and pressure > 0:
-            icono = "🚨"
-            explicacion = (
-                "La deuda neta crece más que la emisión de deuda. "
-                "La caja está cayendo fuertemente → presión financiera elevada."
-            )
+            if ndi > 0:
+
+                if dc > 0:
+                    icono = "🟢"
+                    explicacion = "Emite deuda con mejora de caja"
+                else:
+                    icono = "🚨"
+                    explicacion = "Emite deuda sin soporte en caja"
+
+            elif ndi < 0:
+
+                if dc >= 0:
+                    icono = "🟢"
+                    explicacion = "Reduce deuda con generación de caja"
+                else:
+                    icono = "🟡"
+                    explicacion = "Reduce deuda consumiendo caja"
+
+            else:
+
+                if dc > 0:
+                    icono = "🟢"
+                    explicacion = "Caja positiva sin deuda"
+                else:
+                    icono = "🟡"
+                    explicacion = "Neutral"
 
         resultados.append({
             "icono": icono,
-            "explicacion": explicacion
+            "explicacion": explicacion,
+            "Δ caja": delta_cash_dir,
+            "Emision Deuda": emission_debt_dir,
+            "Δ Deuda neta": delta_net_debt_dir
         })
 
     return resultados
 
 
 
-delta_caja_neta=ut.variacion_absoluta (deuda_neta)
 
 
-analizar_deuda=analizar_deuda_vs_caja(variacion_caja, emision_deuda, delta_caja_neta)
+#delta_caja_neta=ut.variacion_absoluta (deuda_neta)
 
 
-iconos = [d["icono"] for d in analizar_deuda]
+estudio_deuda=analizar_deuda_vs_caja(variacion_caja, emision_deuda, delta_deuda_neta)
 
-
-ut.crear_tabla_5_listas(años,emision_deuda,delta_deuda_neta,variacion_caja,iconos,"Emision Deuda" ,"Δ Deuda neta","Δ caja neta","señal deuda")
+variacion_caja_por=ut.variacion_porcentual(caja)
+variacion_emitida=ut.variacion_porcentual(emision_deuda)
 
 data=[]
 
-for i in range(len(analizar_deuda)):
+for i in range(len(estudio_deuda)):
 
-    icono = analizar_deuda[i]["icono"]
-    exp = analizar_deuda[i]["explicacion"]  
+    icono = estudio_deuda[i]["icono"]
+    exp = estudio_deuda[i]["explicacion"] 
+    var_deuda= estudio_deuda [i]["Δ Deuda neta"] 
+    var_caja= estudio_deuda [i]["Δ caja"] 
+    emi_deuda= estudio_deuda [i]["Emision Deuda"] 
+    var_deuda_por=variacion_por[i]
+    var_caja_por=variacion_caja_por[i]
+    var_emitida=variacion_emitida[i]
+
 
 
 
     data.append({
         "Año": años[i] if i < len(años) else i,
-        "Resultado": icono,
+        
+        "Deuda neta": var_deuda,
+        "Δ Deuda neta %": var_deuda_por,
+        "Estado": icono,
         "Explicación": exp,
+        "Δ Caja": var_caja,
+        "Δ Caja %": var_caja_por,
+
+        "Δ Emision": emi_deuda,
+
+        #"Δ Emision": var_emitida,
         })
 
 df_deuda = pd.DataFrame(data)
@@ -502,6 +534,7 @@ css = """
 
     table.dataframe#tabla_estudio_wc td {
         border: 1px solid #ccc;
+         text-align: center;   /* 👈 esto es lo clave */
     }
     </style>
     """
@@ -509,3 +542,26 @@ css = """
     # Mostrar CSS y tabla
 st.markdown(css, unsafe_allow_html=True)
 st.markdown(html_table, unsafe_allow_html=True)
+
+
+var_emision_deuda=ut.variacion_absoluta(emision_deuda)
+
+var_emision_deuda = [float(x) for x in var_emision_deuda if x != "-"]
+
+st.write("")
+st.write("")
+st.write("")
+
+gr.graficar_2barras (variacion_caja[1:], var_emision_deuda, 
+                     color1="#85EB9F", color2="#DB7979",
+                     eje_x=años[1:],
+                     etiquetas=( "Δ Caja","Δ Deuda Emitida"),
+                     eje_y="Valores")
+
+dif=ut.resta_listas(variacion_caja[1:],var_emision_deuda)
+
+ut.mostrar_cuatro_arrays(años[1:],variacion_caja[1:],var_emision_deuda,dif,"Δ Caja","Δ Deuda Emitida","Diferencia")
+
+
+dif2=ut.suma_listas(delta_deuda_neta[1:],dif)
+ut.mostrar_tres_arrays_texto(años[1:],delta_deuda_neta[1:],dif2,"Δ Deuda_neta","comp con CyE")
