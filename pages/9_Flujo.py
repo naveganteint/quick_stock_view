@@ -41,7 +41,7 @@ años=ut.procesar_array (años)
 
 
 
-#****************************************************** calculo capex mantenimiento **********************************************
+#****************************************************** Estudio capex mantenimiento **********************************************
 
 h3_especial("Estudio capex mantenimiento")
 
@@ -71,16 +71,41 @@ etiquetas=["Capex","Capex mantenimiento","Capex inversion","Depreciacion"]
 
 ############################## capex mantenimiento segund Depreciacion y ventas ***************
 ventas=ex.ventas(df_resultado)
-gr.graficar_2barras (ventas, capex_n, 
-                     color1="#7BD8DF", color2="#A4B885",
+gr.graficar_2barras ( capex_n, ventas,
+                      color1="#A4B885",color2="#7BD8DF",
                      eje_x=años,
-                     etiquetas=("Ventas","Capex"),
+                     etiquetas=("Capex","Ventas"),
                      eje_y="Valores")
 
 
+ratio_ventas_capex= ut.divide_listas(capex_n,ventas)
+
+ratio_ventas_capex = [round(x*100,2) for x in ratio_ventas_capex]
+ratio_ventas_capex = [f"{x:.0f} %" for x in ratio_ventas_capex]
 
 
 
+
+
+crecimiento_ventas=ut.variacion_porcentual(ventas)
+crecimiento_capex=ut.variacion_porcentual(capex_n)
+cereciiento_deprecacion=ut.variacion_porcentual(depreciacion)
+
+
+
+
+años_aux=años[1:]
+ut.mostrar_dos_arrays_texto(años,ratio_ventas_capex,"ratio capex/ventas")
+
+ut.mostrar_dos_arrays_texto(años,crecimiento_ventas,"Crecimiento ventas")
+ut.mostrar_dos_arrays_texto(años,crecimiento_capex,"Crecimiento capex")
+ut.mostrar_dos_arrays_texto(años,cereciiento_deprecacion,"Crecimiento depreciacion")
+
+                            
+
+
+st.write("")
+st.write("")
 
 media_ventas = rt.promedio(ventas)
 
@@ -152,11 +177,58 @@ gr.graficar_2barras (fco, capex_n,
 
 #ut.crear_tabla_4_listas (años,capex_mantenimiento_n2,capex_inversion_n2,capex_n2,"C. mantenimiento (metodo promedio Depreciacion)","Capex inversion","Capex")
 
+#******************************************************************************************************************
+#****************************************************** Calculo de CFO*********************************************
+#******************************************************************************************************************
+
+st.write("")
+st.write("")
+st.write("")
 
 
-st.write("")
-st.write("")
-st.write("")
+h3_especial("Calculo CFO")
+
+# 📥 selector centrado
+col1, col2, col3 = st.columns([1, 1, 4])
+
+
+
+with col2:
+        anio_seleccionado = st.selectbox(
+            "Selecciona el año",
+            años,
+            index=len(años) - 1,
+            key="selector_anio_1"
+        )
+
+
+# 🔑 índice normal
+indice = años.index(anio_seleccionado)
+
+# 🔥 índice invertido (lo que tú quieres)
+indice_inv = indice - len(años)
+
+
+beneficio=ex.beneficio(df_resultado)
+depreciacion=depreciacion
+variacion_WC=ex.variacion_wc(df_flujo)
+cambio_impuestos=ex.change_defer_taxes(df_flujo)
+other_cfo=ex.other_cfo(df_flujo)
+
+Stock_base=ex.stock_base_compensation(df_flujo)
+valores_cfo = [beneficio[indice_inv], depreciacion[indice_inv],  variacion_WC[indice_inv],cambio_impuestos[indice_inv],Stock_base[indice_inv],other_cfo[indice_inv],None]
+etiquetas_cfo = ["Beneficio neto", "Depreciacion", "Variacion WC","Cambio impuestos diferidos","compensacion por stocks options","Otros","CFO"]
+
+etiquetas_cfo = [f"<b>{e}</b>" for e in etiquetas_cfo]
+
+gr.asignar_capital(valores_cfo, etiquetas_cfo,
+                    color_total="#AC6509",
+                    titulo="CFO")
+
+
+
+
+
 #****************************************************** Asignacion de capital año ....*********************************************
 
 h3_especial("Asignacion del capital del año")
@@ -170,7 +242,8 @@ with col2:
         anio_seleccionado = st.selectbox(
             "Selecciona el año",
             años,
-            index=len(años) - 1
+            index=len(años) - 1,
+            key="selector_anio_2"
         )
 
 
@@ -191,7 +264,7 @@ dividendos=ex.dividendos(df_flujo)
 recompras=ex.recompras(df_flujo)
 adquisiciones=ex.adquisiciones(df_flujo)
 deuda_emitida=ex.pago_deuda(df_flujo)
-
+variacion_cash=ex.variacion_en_caja(df_flujo)
 
 
 
@@ -212,12 +285,12 @@ deuda_emitida=ex.pago_deuda(df_flujo)
 inversiones_varias=ex.inversiones_varias(df_flujo)
 
 Otra_financiacion=ex.other_cash_financing(df_flujo)
+cambio=ex.change(df_flujo)
 
 
+valores = [fco[indice_inv], -capex_mant_segun_ventas[indice_inv],  -capex_inversion_ventas[indice_inv],adquisiciones[indice_inv],inversiones_varias[indice_inv],dividendos[indice_inv],recompras[indice_inv],deuda_emitida[indice_inv],Otra_financiacion[indice_inv],variacion_cash[indice_inv],cambio[indice_inv],None]
 
-valores = [fco[indice_inv], -capex_mant_segun_ventas[indice_inv],  -capex_inversion_ventas[indice_inv],adquisiciones[indice_inv],inversiones_varias[indice_inv],dividendos[indice_inv],recompras[indice_inv],deuda_emitida[indice_inv],Otra_financiacion[indice_inv],None]
-
-etiquetas = ["Flujo de caja operativo", "Capex Mantenimiento", "Capex Inversion","Adquisiciones","Inversiones Varias","Dividendos","Recompras","Emision Deuda","Otra financiacion","Total"]
+etiquetas = ["Flujo de caja operativo", "Capex Mantenimiento", "Capex Inversion","Adquisiciones","Inversiones Varias","Dividendos","Recompras","Emision Deuda","Otra financiacion","Variacion en caja","change effect","Total"]
 
 
 etiquetas_tabla=etiquetas
@@ -246,11 +319,15 @@ etiquetas_tabla[-1]=("<b>**Resultado de caja</b>")
 valores_tabla.insert(2, fco[indice_inv] - capex_mantenimiento_n[indice_inv])
 valores_tabla.insert(6,  -capex_inversion_n[indice_inv]+adquisiciones[indice_inv]+inversiones_varias[indice_inv])
 valores_tabla.insert(11, dividendos[indice_inv]+recompras[indice_inv]+deuda_emitida[indice_inv]+Otra_financiacion[indice_inv])
-valores_tabla[-1]= valores_tabla[2]+valores_tabla[6]+valores_tabla[11]
+valores_tabla[-1]= valores_tabla[2]+valores_tabla[6]+valores_tabla[11]+valores_tabla[13]
 
 remanente=[]
 remanente.append(fco[indice_inv])
 remanente.append(fco[indice_inv] - capex_mant_segun_ventas[indice_inv])
+
+
+
+
 
 fcf_tabla= fco[indice_inv] - capex_mant_segun_ventas[indice_inv] 
 
@@ -264,10 +341,13 @@ remanente.append(remanente[7]+valores[8])
 remanente.append(remanente[8]+valores[9])
 remanente.append(remanente[9]+valores[10])
 remanente.append("<b>--</b>")
-remanente.append(remanente[9]+valores[10])
+remanente.append("<b>--</b>")
+remanente.append(remanente[10]+valores[13])
 
 
 
+
+remanente.append(remanente[13]-valores[14])
 
 
 
@@ -279,13 +359,12 @@ df_asignacion = pd.DataFrame({
 })
 
 
+
 df_asignacion["Importe"] = [
     "<b>--</b>" if x == "<b>--</b>" or pd.isna(x)
     else f"{float(x):.0f}"
     for x in df_asignacion["Importe"]
 ]
-
-
 
 df_asignacion["Remanente"] = [
     "<b>--</b>" if x == "<b>--</b>" or pd.isna(x)

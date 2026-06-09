@@ -495,6 +495,89 @@ def proveedores(df):
 # ******************************************Flujo de caja*********************************
 # ************************************************************* *********************************
 
+
+def variacion_wc(df):
+
+    fila=ut.buscar_fila(df, "Change in Working Capital")
+    try:
+        lista=ut.fila_a_array (df,fila+1)
+    except :
+        lista= 10* [0]
+
+    lista=ut.limpiar_a_numeros(lista)
+
+    return lista
+
+
+
+def change_defer_taxes(df):
+
+    fila=ut.buscar_fila(df, "Change in Deferred Tax")
+    try:
+        lista=ut.fila_a_array (df,fila+1)
+    except :
+        lista= 10* [0]
+
+    lista=ut.limpiar_a_numeros(lista)
+
+    return lista
+
+
+
+def stock_base_compensation(df):
+
+    fila=ut.buscar_fila(df, "Stock-Based Compensation")
+    try:
+        lista=ut.fila_a_array (df,fila+1)
+    except :
+        lista= 10* [0]
+
+    lista=ut.limpiar_a_numeros(lista)
+
+    return lista
+
+
+def other_cfo(df):
+
+    fila=ut.buscar_fila(df, "Cash From Operations")
+    try:
+        lista=ut.fila_a_array (df,fila)
+    except :
+        lista= 10* [0]
+
+    lista=ut.limpiar_a_numeros(lista)
+
+    return lista
+
+
+def variacion_en_caja(df):
+
+    cfo=FCO(df)
+    financing=cash_financing(df)
+    inversion=cash_inversion(df)
+
+    aux=ut.suma_listas(cfo,financing)
+    lista=ut.suma_listas(aux,inversion)
+  
+
+    return lista
+
+
+def change(df):
+
+    fila=ut.buscar_fila(df, "Effect of Exchange Rate")
+    try:
+        lista=ut.fila_a_array (df,fila+1)
+    except :
+        lista= 10* [0]
+
+    lista=ut.limpiar_a_numeros(lista)
+
+    return lista
+
+
+
+
 def FCO(df):
 
     fila=ut.buscar_fila(df, "Cash From Operations")

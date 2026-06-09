@@ -94,7 +94,8 @@ delta_wc = [
 gr.grafica_columnas(años,working_capital,"Años","Working capital (fondo de maniobra)","#CA92F0")
 ut.mostrar_tres_arrays_texto(años, working_capital,delta_wc,"Working capital","Δ working capital")
 
-
+variacion_WC=ex.variacion_wc(df_flujo)
+ut.mostrar_dos_arrays_texto(años,variacion_WC,"WC empresa")
 
 caja=ex.caja(df_balance)
 delta_caja= ut.variacion_absoluta(caja)

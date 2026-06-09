@@ -123,7 +123,8 @@ gr.graficar_tres_lineas(pay_out, pay_out_fcf, lim_sup,"#F06616","#AA7EF0","#FF00
 ut.mostrar_tres_arrays_texto(años,pay_out,pay_out_fcf,"pay_out sobre beneficio", "pay_out sobre FCF")
 
 
-
+st.write("")
+st.write("")
 
 
 #***********************************************FCF - Dividendos  *****************
@@ -154,3 +155,21 @@ ut.mostrar_tabla_tres_celdas("CAGR", "Dividendos", cagr)
 
 
 ut.mostrar_tabla_4_listas(años,fcf,dividendos,pay_out_fcf_texto,"FCF","Dividendos", "Pay-out (FCF)%")
+
+
+st.write("")
+st.write("")
+st.write("")
+
+#***********************************************FCF - Dividendos  *****************
+
+h3_especial("Dividendos - intereses")
+
+intereses= ex.intereses(df_resultado)
+intereses = [-x for x in intereses]
+
+gr.graficar_2barras (dividendos, intereses, 
+                     color1="#F7A354", color2="#CCC232",
+                     eje_x=años,
+                     etiquetas=("Dividendos","Intereses"),
+                     eje_y="Valores")
