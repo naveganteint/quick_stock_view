@@ -403,3 +403,31 @@ table#tabla_isgr td {
 
 st.markdown(css, unsafe_allow_html=True)
 st.markdown(html_table, unsafe_allow_html=True)
+
+
+
+#*********************************************** crecimeinto estruturado *****************
+
+
+titulo_con_ventana_informativa ("Crecimiento sostenible", DEFINICIONES["crecimiento"])
+
+roe=roe
+dividendos=ex.dividendos(df_flujo)
+recompras=ex.recompras(df_flujo)
+
+beneficio_neto_aux=ut.suma_listas(beneficio_neto,dividendos)
+beneficio_neto_aux=ut.suma_listas(beneficio_neto_aux,recompras)
+tasa_reinversion=ut.divide_listas(beneficio_neto_aux,beneficio_neto)
+
+crecimiento= ut.multiplica_listas(roe,tasa_reinversion)
+
+
+
+#ut.mostrar_cuatro_arrays(años,beneficio_neto,dividendos,recompras,"beneficio","dividendos","recompras")
+
+tasa_reinversion = [round(x*100,2) for x in tasa_reinversion]
+crecimiento= [round(x,2) for x in crecimiento]
+ratio_crecimiento = [f"{x:.2f} %" for x in crecimiento]
+
+st.write("")
+ut.mostrar_tabla_4_listas(años,roe,tasa_reinversion,ratio_crecimiento,"Roe","tasa reinversion","Crecimiento estructurado")

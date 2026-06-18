@@ -76,11 +76,23 @@ ut.mostrar_tabla_4_listas(años,ventas,beneficio,margen_neto_texto,"Ventas","Ben
 
 
 gr.grafica_columnas(años,ventas,"Años","Ventas","#4AB0F0")
+var_ventas=ut.variacion_porcentual(ventas)
+ut.mostrar_dos_arrays_texto (años,var_ventas,"Variacion ventas")
+
+
 cagr=rt.calcular_cagr(ventas)
 ut.mostrar_tabla_tres_celdas("CAGR", "Ventas", cagr)
 
 
+
+
+
 gr.grafica_columnas(años,beneficio,"Años","Beneficio","#F59556")
+var_beneficio=ut.variacion_porcentual(beneficio)
+ut.mostrar_dos_arrays_texto (años,var_beneficio,"Variacion beneficio")
+
+
+
 cagr=rt.calcular_cagr(beneficio)
 ut.mostrar_tabla_tres_celdas("CAGR", "Beneficio", cagr)
 
@@ -104,9 +116,7 @@ ut.mostrar_dos_arrays_texto (años,fcf,"Free Cash Flow")
 
 
 
-#*********************************************** Recompras *****************
 
-h3_especial("Recompras")
 recompras=ex.recompras(df_flujo)
 
 
@@ -128,3 +138,28 @@ cagr=rt.calcular_cagr(acciones)
 ut.mostrar_tabla_tres_celdas("CAGR", "Acciones", cagr)
 
 
+#*********************************************** Recompras *****************
+
+h3_especial("Impuestos")
+
+impuestos=ex.income_tax(df_resultado)
+impuestos = [-x for x in impuestos]
+gr.grafica_columnas(años,impuestos,"Años","Impuestos","#777777")
+
+
+#*********************************************** Intereses *****************
+
+h3_especial("Intereses")
+
+intereses=ex.intereses(df_resultado)
+intereses = [-x for x in intereses]
+
+gr.grafica_columnas(años,intereses,"Años","Intereses","#9B9109")
+
+#*********************************************** Intereses *****************
+
+h3_especial("Depreciacion")
+
+depreciacion=ex.depreciacion(df_flujo)
+
+gr.grafica_columnas(años,depreciacion,"Años","Depreciacion","#585637")

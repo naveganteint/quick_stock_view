@@ -186,10 +186,35 @@ La empresa:
 """
 
 
+,
 
 
 
 
+
+"crecimiento":
+"""
+
+🧠 📌 Crecimiento sostenible (g = ROE × reinversión)
+<BR>Mide cuánto puede crecer una empresa sin financiación externa
+<BR>Depende de:
+<BR>⇒ ROE → rentabilidad sobre capital propio
+<BR>⇒ Reinversión → cuánto beneficio se reinvierte
+<BR><BR>⚠️ 📌 Problema del ROE y por qué importa el ROIC
+<BR>El ROE puede estar distorsionado por la deuda, por eso se usa el ROIC para ver la calidad real del negocio
+
+<BR><BR>👉 El ROIC es clave porque:
+
+<BR>mide la rentabilidad del capital total (más “real”), no se ve afectado por el apalancamiento
+indica si la empresa crea valor o no
+<BR><BR>🔑 Regla clave
+<BR>ROIC > costedecapital ⇒ crea valor
+<BR><BR>📊 📌 Interpretación del crecimiento (g)
+<BR>< 5% → bajo
+<BR>5–10% → normal
+<BR>10–15% → bueno
+<BR>15% → excelente (si ROIC es alto)
+"""
 
 
 }
